@@ -1,0 +1,4 @@
+aiohttp==3.7.4.post0
+asyncclick==8.0.1.3
+asyncio==3.4.3
+anyio==3.3.1
