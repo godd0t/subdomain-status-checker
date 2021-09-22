@@ -26,11 +26,11 @@ async def touch(domain, protocol, filename):
                 result = await endpoint_hit(fix_url)
                 try:
                     if result.status == 200:
-                        click.echo(click.style(f"FOUND {result.url}  STATUS CODE: {result.status}", fg='green'))
+                        click.echo(click.style(f"FOUND {fix_url}  STATUS CODE: {result.status}", fg='green'))
                     else:
-                        click.echo(click.style(f"NOT FOUND {result.url}  STATUS CODE: {result.status}", fg='red'))
+                        click.echo(click.style(f"NOT FOUND {fix_url}  STATUS CODE: {result.status}", fg='yellow'))
                 except:
-                    click.echo(click.style(f"Failed {fix_url}", fg='red'))
+                    click.echo(click.style(f"FAILED: {fix_url} REASON: {fix_url} doesn't exist!", fg='red'))
 
 
 if __name__ == '__main__':
