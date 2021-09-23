@@ -22,7 +22,7 @@ async def touch(domain, protocol, filename):
         formatted_subdomains = subdomains.split(",")
         for i in formatted_subdomains:
             for p in protocols:
-                fix_url = f"{p}://{i}.{domain}"
+                fix_url = f"{p}://{i.strip()}.{domain}"
                 result = await endpoint_hit(fix_url)
                 try:
                     if result.status == 200:
@@ -30,7 +30,7 @@ async def touch(domain, protocol, filename):
                     else:
                         click.echo(click.style(f"NOT FOUND {fix_url}  STATUS CODE: {result.status}", fg='yellow'))
                 except:
-                    click.echo(click.style(f"FAILED: {fix_url} REASON: {fix_url} doesn't exist!", fg='red'))
+                    click.echo(click.style(f"FAILED: {fix_url} doesn't exist!", fg='red'))
 
 
 if __name__ == '__main__':
