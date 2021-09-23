@@ -1,7 +1,6 @@
 import asyncclick as click
 from aiohttp import ClientSession
 from typing import Optional, BinaryIO
-import typer
 
 
 async def endpoint_hit(domain):
