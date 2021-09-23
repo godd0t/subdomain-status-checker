@@ -26,12 +26,12 @@ async def result_return(url):
 
 @click.command()
 @click.option('--domain', type=click.STRING, required=False)
-@click.option('--protocol', type=click.STRING, required=False)
+@click.option('--protocol', type=click.STRING, required=True)
 @click.option('--filename', type=click.Path(exists=True), required=True)
 @click.option('--bulk', type=click.Path(exists=True), required=False)
 async def touch(
         filename: BinaryIO, bulk: Optional[BinaryIO],
-        protocol: typer.Argument("https"), domain: Optional[str] = None
+        protocol: str, domain: Optional[str] = None
 ):
     with open(filename) as f:
         protocols = protocol.split(",")
