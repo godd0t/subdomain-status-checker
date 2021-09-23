@@ -18,9 +18,8 @@ async def endpoint_hit(domain):
 async def touch(domain, protocol, filename):
     with open(filename) as f:
         protocols = protocol.split(",")
-        subdomains = f.read()
-        formatted_subdomains = subdomains.split(",")
-        for i in formatted_subdomains:
+        subdomains = f.readlines()
+        for i in subdomains:
             for p in protocols:
                 fix_url = f"{p}://{i.strip()}.{domain}"
                 result = await endpoint_hit(fix_url)
