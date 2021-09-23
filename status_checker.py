@@ -24,14 +24,22 @@ async def result_return(url):
 
 
 @click.command()
-@click.option('--domain', type=click.STRING, required=False)
-@click.option('--protocol', type=click.STRING, required=True)
-@click.option('--filename', type=click.Path(exists=True), required=True)
-@click.option('--bulk', type=click.Path(exists=True), required=False)
+@click.option('-add', '--addon', is_flag=True)
+@click.option('--domain', type=click.STRING,
+              required=False, help='If parameter is passed then only one domain is checked.')
+@click.option('--protocol', type=click.STRING,
+              required=True, help='Example: https')
+@click.option('--filename', type=click.Path(exists=True),
+              required=True, help='Subdomain wordlist')
+@click.option('--bulk', type=click.Path(exists=True),
+              required=False, help='If parameter is passed then it will check the domains in the wordlist')
 async def touch(
         filename: BinaryIO, bulk: Optional[BinaryIO],
-        protocol: str, domain: Optional[str] = None
+        protocol: str, domain: Optional[str] = None,
+        verbose: Optional[bool] = False
 ):
+
+    """This script checks is subdomain exists in the given domains."""
     with open(filename) as f:
         protocols = protocol.split(",")
         subdomains = f.readlines()
@@ -48,6 +56,8 @@ async def touch(
                         for subdomain in subdomains:
                             fix_url = f"{protocol}://{subdomain.strip()}.{domain.strip()}"
                             await result_return(fix_url)
+            click.confirm('Do you want to continue?', abort=True)
+            print("Confirmed!")
 
 
 if __name__ == '__main__':
