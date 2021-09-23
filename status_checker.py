@@ -11,25 +11,39 @@ async def endpoint_hit(domain):
             return None
 
 
+async def result_return(url):
+    result = await endpoint_hit(url)
+    try:
+        if result.status == 200:
+            click.echo(click.style(f"FOUND {url}  STATUS CODE: {result.status}", fg='green'))
+        else:
+            click.echo(click.style(f"NOT FOUND {url}  STATUS CODE: {result.status}", fg='yellow'))
+    except:
+        click.echo(click.style(f"FAILED: {url} doesn't exist!", fg='red'))
+
+
 @click.command()
-@click.option('--domain', type=click.STRING)
-@click.option('--protocol', type=click.STRING)
-@click.option('--filename', type=click.Path(exists=True))
-async def touch(domain, protocol, filename):
+@click.option('--domain', type=click.STRING, required=True)
+@click.option('--protocol', type=click.STRING, required=True)
+@click.option('--filename', type=click.Path(exists=True), required=True)
+@click.option('--bulk', type=click.Path(exists=True), required=False)
+async def touch(domain, protocol, filename, bulk=None):
     with open(filename) as f:
         protocols = protocol.split(",")
         subdomains = f.readlines()
-        for i in subdomains:
-            for p in protocols:
-                fix_url = f"{p}://{i.strip()}.{domain}"
-                result = await endpoint_hit(fix_url)
-                try:
-                    if result.status == 200:
-                        click.echo(click.style(f"FOUND {fix_url}  STATUS CODE: {result.status}", fg='green'))
-                    else:
-                        click.echo(click.style(f"NOT FOUND {fix_url}  STATUS CODE: {result.status}", fg='yellow'))
-                except:
-                    click.echo(click.style(f"FAILED: {fix_url} doesn't exist!", fg='red'))
+        if bulk is None:
+            for i in subdomains:
+                for p in protocols:
+                    fix_url = f"{p}://{i.strip()}.{domain}"
+                    await result_return(fix_url)
+        else:
+            with open(bulk) as b:
+                domain_list = b.readlines()
+                for i in subdomains:
+                    for p in protocols:
+                        for d in domain_list:
+                            fix_url = f"{p}://{d.strip()}.{i.strip()}.{domain}"
+                            await result_return(fix_url)
 
 
 if __name__ == '__main__':
