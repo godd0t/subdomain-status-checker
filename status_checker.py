@@ -1,5 +1,7 @@
 import asyncclick as click
 from aiohttp import ClientSession
+from typing import Optional, BinaryIO
+import typer
 
 
 async def endpoint_hit(domain):
@@ -23,11 +25,14 @@ async def result_return(url):
 
 
 @click.command()
-@click.option('--domain', type=click.STRING, required=True)
-@click.option('--protocol', type=click.STRING, required=True)
+@click.option('--domain', type=click.STRING, required=False)
+@click.option('--protocol', type=click.STRING, required=False)
 @click.option('--filename', type=click.Path(exists=True), required=True)
 @click.option('--bulk', type=click.Path(exists=True), required=False)
-async def touch(domain, protocol, filename, bulk=None):
+async def touch(
+        filename: BinaryIO, bulk: Optional[BinaryIO],
+        protocol: typer.Argument("https"), domain: Optional[str] = None
+):
     with open(filename) as f:
         protocols = protocol.split(",")
         subdomains = f.readlines()
@@ -39,10 +44,10 @@ async def touch(domain, protocol, filename, bulk=None):
         else:
             with open(bulk) as b:
                 domain_list = b.readlines()
-                for i in subdomains:
-                    for p in protocols:
-                        for d in domain_list:
-                            fix_url = f"{p}://{d.strip()}.{i.strip()}.{domain}"
+                for domain in domain_list:
+                    for protocol in protocols:
+                        for subdomain in subdomains:
+                            fix_url = f"{protocol}://{subdomain.strip()}.{domain.strip()}"
                             await result_return(fix_url)
 
 
